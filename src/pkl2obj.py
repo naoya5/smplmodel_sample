@@ -1,7 +1,5 @@
-import pickle
 import torch
 from smplx import SMPL  # SMPLX から SMPL クラスに変更
-import os
 import json
 import trimesh
 import numpy as np

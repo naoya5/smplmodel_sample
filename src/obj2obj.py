@@ -1,4 +1,3 @@
-import pickle
 import torch
 from smplx import SMPL
 import os
