@@ -1,0 +1,73 @@
+{
+  "total_frames": 1,
+  "total_parts": 24,
+  "top_parts_by_probability": [
+    {
+      "part": "head",
+      "probability": 0.5193545326147727,
+      "total_gaze": 3120.2599998291394,
+      "avg_per_frame": 3120.2599998291394
+    },
+    {
+      "part": "neck",
+      "probability": 0.2557818226340726,
+      "total_gaze": 1536.7263395782804,
+      "avg_per_frame": 1536.7263395782804
+    },
+    {
+      "part": "spine2",
+      "probability": 0.22230393378606797,
+      "total_gaze": 1335.5926035824937,
+      "avg_per_frame": 1335.5926035824937
+    },
+    {
+      "part": "leftShoulder",
+      "probability": 0.0024740625191644237,
+      "total_gaze": 14.864062660162258,
+      "avg_per_frame": 14.864062660162258
+    },
+    {
+      "part": "rightShoulder",
+      "probability": 8.55853910114498e-05,
+      "total_gaze": 0.5141933984830445,
+      "avg_per_frame": 0.5141933984830445
+    },
+    {
+      "part": "spine1",
+      "probability": 5.1149879293661124e-08,
+      "total_gaze": 0.0003073063049099878,
+      "avg_per_frame": 0.0003073063049099878
+    },
+    {
+      "part": "leftArm",
+      "probability": 1.1610504506971906e-08,
+      "total_gaze": 6.97554185356693e-05,
+      "avg_per_frame": 6.97554185356693e-05
+    },
+    {
+      "part": "rightArm",
+      "probability": 2.945269822112535e-10,
+      "total_gaze": 1.769505614666166e-06,
+      "avg_per_frame": 1.769505614666166e-06
+    },
+    {
+      "part": "spine",
+      "probability": 1.1070018194816514e-16,
+      "total_gaze": 6.650819970081501e-13,
+      "avg_per_frame": 6.650819970081501e-13
+    },
+    {
+      "part": "leftForeArm",
+      "probability": 1.937961474349147e-22,
+      "total_gaze": 1.1643190325455044e-18,
+      "avg_per_frame": 1.1643190325455044e-18
+    }
+  ],
+  "most_attended_frames": [
+    {
+      "part": "head",
+      "frame_count": 1,
+      "percentage": 100.0
+    }
+  ]
+}
