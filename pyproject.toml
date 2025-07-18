@@ -15,6 +15,7 @@ dependencies = [
     "scikit-learn>=1.7.0",
     "scipy>=1.16.0",
     "smplx>=0.1.28",
+    "tabulate>=0.9.0",
     "torch>=2.7.1",
     "trimesh>=4.7.0",
 ]

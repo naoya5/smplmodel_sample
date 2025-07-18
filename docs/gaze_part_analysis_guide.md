@@ -2,7 +2,7 @@
 
 ## 概要
 
-本システムは、SMPLモデルの3Dヒューマンメッシュに対する視線データを部位別に分析するツールです。`.npy`形式の視線データファイルを読み込み、SMPLモデルの各解剖学的部位（頭部、首、胴体、手足など）への視線集中度を定量的に計算・分析します。
+本システムは、SMPL モデルの 3D ヒューマンメッシュに対する視線データを部位別に分析するツールです。`.npy`形式の視線データファイルを読み込み、SMPL モデルの各解剖学的部位（頭部、首、胴体、手足など）への視線集中度を定量的に計算・分析します。
 
 ## システム構成
 
@@ -10,7 +10,7 @@
 
 1. **`src/gaze_part_analyzer.py`**: 視線分析の核となるクラス
 2. **`utils/gaze_part_viewer.py`**: コマンドライン実行インターフェース
-3. **SMPLセグメンテーションファイル**: 頂点と部位の対応データ
+3. **SMPL セグメンテーションファイル**: 頂点と部位の対応データ
 
 ### データフロー
 
@@ -24,7 +24,7 @@
 
 ### 入力データ形式
 
-- **ファイル形式**: `.npy` (NumPy配列)
+- **ファイル形式**: `.npy` (NumPy 配列)
 - **データ形状**: `(6890, 1)` または `(6890,)`
 - **データ型**: `float64`
 - **値の範囲**: `0.0` 以上の実数値
@@ -40,35 +40,41 @@ frame_N.npy # フレーム番号N
 
 プログラムはファイル名から数値部分を抽出してフレーム番号として使用します。
 
-## SMPL部位分類
+## SMPL 部位分類
 
-本システムは24の解剖学的部位を認識します：
+本システムは 24 の解剖学的部位を認識します：
 
 ### 頭部・首
-- **head** (589頂点): 頭部全体
-- **neck** (129頂点): 首
+
+- **head** (589 頂点): 頭部全体
+- **neck** (129 頂点): 首
 
 ### 胴体
-- **spine** (228頂点): 腰椎部
-- **spine1** (280頂点): 中胸椎部  
-- **spine2** (372頂点): 上胸椎部
+
+- **spine** (228 頂点): 腰椎部
+- **spine1** (280 頂点): 中胸椎部
+- **spine2** (372 頂点): 上胸椎部
 
 ### 上肢
-- **leftShoulder** / **rightShoulder** (130頂点): 肩
-- **leftArm** / **rightArm** (280頂点): 上腕
-- **leftForeArm** / **rightForeArm** (184/280頂点): 前腕
+
+- **leftShoulder** / **rightShoulder** (130 頂点): 肩
+- **leftArm** / **rightArm** (280 頂点): 上腕
+- **leftForeArm** / **rightForeArm** (184/280 頂点): 前腕
 
 ### 手
-- **leftHand** / **rightHand** (436/239頂点): 手のひら・指
-- **leftHandIndex1** / **rightHandIndex1** (436頂点): 人差し指
+
+- **leftHand** / **rightHand** (436/239 頂点): 手のひら・指
+- **leftHandIndex1** / **rightHandIndex1** (436 頂点): 人差し指
 
 ### 下肢
-- **leftUpLeg** / **rightUpLeg** (228頂点): 大腿部
-- **leftLeg** / **rightLeg** (214/280頂点): 下腿部
+
+- **leftUpLeg** / **rightUpLeg** (228 頂点): 大腿部
+- **leftLeg** / **rightLeg** (214/280 頂点): 下腿部
 
 ### 足
-- **leftFoot** / **rightFoot** (129/143頂点): 足部
-- **leftToeBase** / **rightToeBase** (122頂点): つま先
+
+- **leftFoot** / **rightFoot** (129/143 頂点): 足部
+- **leftToeBase** / **rightToeBase** (122 頂点): つま先
 
 ## 使用方法
 
@@ -79,10 +85,12 @@ frame_N.npy # フレーム番号N
 python utils/gaze_part_viewer.py data/
 
 # 詳細ログ付き実行
-python utils/gaze_part_viewer.py data/ --verbose
+uv run utils/gaze_part_viewer.py data/ --verbose
 
 # 出力先ディレクトリ指定
-python utils/gaze_part_viewer.py data/ --output results/
+uv run utils/gaze_part_viewer.py data/ --output results/
+
+uv run utils/gaze_part_viewer.py data/ --output results/ --verbos
 ```
 
 ### 高度なオプション
@@ -123,29 +131,29 @@ frame_results = analyzer.frame_results
 
 ### 1. 部位別分析結果 (`part_gaze_analysis.csv`)
 
-各部位の統計データを含むCSVファイル：
+各部位の統計データを含む CSV ファイル：
 
-| 列名 | 説明 |
-|------|------|
-| part_name | 部位名 |
-| total_gaze | 全フレームでの視線値合計 |
-| probability | 視線確率（0-1） |
-| average_per_frame | フレーム当たり平均視線値 |
-| average_per_vertex | 頂点当たり平均視線値 |
-| vertex_count | 部位の頂点数 |
+| 列名               | 説明                     |
+| ------------------ | ------------------------ |
+| part_name          | 部位名                   |
+| total_gaze         | 全フレームでの視線値合計 |
+| probability        | 視線確率（0-1）          |
+| average_per_frame  | フレーム当たり平均視線値 |
+| average_per_vertex | 頂点当たり平均視線値     |
+| vertex_count       | 部位の頂点数             |
 
 ### 2. フレーム別分析結果 (`frame_gaze_analysis.csv`)
 
-各フレームの詳細データを含むCSVファイル：
+各フレームの詳細データを含む CSV ファイル：
 
-| 列名 | 説明 |
-|------|------|
-| frame | フレーム番号 |
-| max_part | 最大注視部位 |
-| max_value | 最大視線値 |
-| total_gaze | フレーム内視線値合計 |
-| {部位名}_value | 各部位の視線値 |
-| {部位名}_ratio | 各部位の視線割合 |
+| 列名            | 説明                 |
+| --------------- | -------------------- |
+| frame           | フレーム番号         |
+| max_part        | 最大注視部位         |
+| max_value       | 最大視線値           |
+| total_gaze      | フレーム内視線値合計 |
+| {部位名}\_value | 各部位の視線値       |
+| {部位名}\_ratio | 各部位の視線割合     |
 
 ### 3. 統計サマリー (`gaze_analysis_summary.json`)
 
@@ -173,9 +181,10 @@ frame_results = analyzer.frame_results
 
 ### 4. 可視化グラフ (`gaze_part_analysis.png`)
 
-2つのグラフを含むPNG画像：
-1. **部位別視線分布**: 各部位への視線確率の棒グラフ（上位15位）
-2. **フレーム別最大注視部位推移**: 時間軸での注視部位変化（最初の50フレーム）
+2 つのグラフを含む PNG 画像：
+
+1. **部位別視線分布**: 各部位への視線確率の棒グラフ（上位 15 位）
+2. **フレーム別最大注視部位推移**: 時間軸での注視部位変化（最初の 50 フレーム）
 
 ## 分析指標
 
@@ -208,7 +217,7 @@ max_part = argmax(各部位の視線値)
 
 ## 分析例と解釈
 
-### 例1: 顔中心の視線パターン
+### 例 1: 顔中心の視線パターン
 
 ```
 head: 52.0%          # 頭部が最大の注視対象
@@ -219,7 +228,7 @@ leftShoulder: 0.2%   # 肩への軽微な注視
 
 **解釈**: 典型的な対人注視パターン。顔・首領域に集中した視線分布。
 
-### 例2: 動作注視パターン
+### 例 2: 動作注視パターン
 
 ```
 leftHand: 35.0%      # 左手への強い注視
@@ -234,14 +243,14 @@ leftArm: 12.0%       # 腕の動きへの注視
 
 ### パフォーマンス
 
-- **処理速度**: 100フレーム/秒程度（標準的なPC）
-- **メモリ使用量**: フレーム数 × 6890 × 8バイト + 分析結果
-- **推奨フレーム数**: 1000フレーム以下（メモリ効率のため）
+- **処理速度**: 100 フレーム/秒程度（標準的な PC）
+- **メモリ使用量**: フレーム数 × 6890 × 8 バイト + 分析結果
+- **推奨フレーム数**: 1000 フレーム以下（メモリ効率のため）
 
 ### 制限事項
 
-1. **頂点数固定**: SMPLモデルの6890頂点に固定
-2. **部位分類固定**: 24部位の事前定義分類のみ
+1. **頂点数固定**: SMPL モデルの 6890 頂点に固定
+2. **部位分類固定**: 24 部位の事前定義分類のみ
 3. **フレーム順序**: ファイル名の数値順でのみ処理
 4. **視線値非負**: 負の視線値は想定外
 
@@ -263,6 +272,7 @@ except Exception as e:
 ### アルゴリズム
 
 1. **データ読み込み**
+
    ```python
    # .npyファイルの読み込み
    data = np.load(file_path)
@@ -272,6 +282,7 @@ except Exception as e:
    ```
 
 2. **部位マッピング**
+
    ```python
    # セグメンテーションデータから頂点インデックス取得
    vertex_indices = segmentation_data[part_name]
@@ -319,15 +330,18 @@ smplmodel_sample/
 ### よくある問題
 
 1. **ModuleNotFoundError: No module named 'pandas'**
+
    ```bash
    uv add pandas matplotlib
    ```
 
 2. **ValueError: Invalid vertex count**
+
    - 入力データの形状を確認
-   - SMPLモデル以外のメッシュデータの可能性
+   - SMPL モデル以外のメッシュデータの可能性
 
 3. **日本語フォントの警告**
+
    - 可視化での日本語表示警告（機能には影響なし）
    - `--no-visualization`オプションで回避可能
 
@@ -353,7 +367,7 @@ analyzer = GazePartAnalyzer()
 
 1. **時系列分析**: 視線の時間的変化パターンの分析
 2. **クラスタリング**: 類似の視線パターンのグループ化
-3. **ヒートマップ**: 3Dメッシュ上での視線密度可視化
+3. **ヒートマップ**: 3D メッシュ上での視線密度可視化
 4. **統計検定**: 部位間視線差の有意性検定
 5. **機械学習**: 視線パターンの自動分類
 
@@ -373,10 +387,10 @@ def custom_metric(gaze_data, part_vertices):
 
 ## 参考資料
 
-- [SMPL公式サイト](https://smpl.is.tue.mpg.de/)
+- [SMPL 公式サイト](https://smpl.is.tue.mpg.de/)
 - [Meshcapade SMPL セグメンテーション](https://github.com/Meshcapade/wiki)
-- [NumPy公式ドキュメント](https://numpy.org/doc/)
-- [pandas公式ドキュメント](https://pandas.pydata.org/docs/)
+- [NumPy 公式ドキュメント](https://numpy.org/doc/)
+- [pandas 公式ドキュメント](https://pandas.pydata.org/docs/)
 
 ---
 

@@ -252,12 +252,15 @@ class GazePartAnalyzer:
         # 全部位のフレーム集計を計算
         all_parts_frame_analysis = []
         for part_name, part_info in sorted_parts:
-            frame_count = sum(1 for frame in self.frame_results 
-                             if frame["part_values"].get(part_name, 0) > 0)
+            frame_count_with_gaze = sum(1 for frame in self.frame_results 
+                                       if frame["part_values"].get(part_name, 0) > 0)
+            frame_count_without_gaze = len(self.frame_results) - frame_count_with_gaze
             all_parts_frame_analysis.append({
                 "part": part_name,
-                "frame_count": frame_count,
-                "percentage": frame_count / len(self.frame_results) * 100,
+                "frame_count_with_gaze": frame_count_with_gaze,
+                "frame_count_without_gaze": frame_count_without_gaze,
+                "percentage_with_gaze": frame_count_with_gaze / len(self.frame_results) * 100,
+                "percentage_without_gaze": frame_count_without_gaze / len(self.frame_results) * 100,
                 "probability": part_info["probability"],
                 "total_gaze": part_info["total_gaze"]
             })
@@ -280,7 +283,7 @@ class GazePartAnalyzer:
                     "frame_count": count,
                     "percentage": count / len(self.frame_results) * 100
                 }
-                for part, count in sorted(max_parts_count.items(), key=lambda x: x[1], reverse=True)[:5]
+                for part, count in sorted(max_parts_count.items(), key=lambda x: x[1], reverse=True)
             ],
             "all_parts_frame_analysis": all_parts_frame_analysis
         }
@@ -429,10 +432,16 @@ class GazePartAnalyzer:
         frames = [f["frame"] for f in frame_subset]
         max_parts = [f["max_part"] for f in frame_subset]
         
-        # 部位を数値にマッピング
-        unique_parts = sorted(set(max_parts))
-        part_to_num = {part: i for i, part in enumerate(unique_parts)}
-        max_part_nums = [part_to_num.get(part, -1) for part in max_parts]
+        # Noneを除外して部位を数値にマッピング
+        valid_max_parts = [part for part in max_parts if part is not None]
+        if not valid_max_parts:
+            print("警告: 有効な最大注視部位データがありません")
+            unique_parts = ["unknown"]
+            max_part_nums = [0] * len(max_parts)
+        else:
+            unique_parts = sorted(set(valid_max_parts))
+            part_to_num = {part: i for i, part in enumerate(unique_parts)}
+            max_part_nums = [part_to_num.get(part, -1) if part is not None else -1 for part in max_parts]
         
         ax2.plot(frames, max_part_nums, 'o-', markersize=4, linewidth=1)
         ax2.set_xlabel('フレーム番号')

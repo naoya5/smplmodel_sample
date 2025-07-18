@@ -88,6 +88,279 @@
       "part": "rightLeg",
       "frame_count": 55,
       "percentage": 5.807814149947202
+    },
+    {
+      "part": "rightUpLeg",
+      "frame_count": 54,
+      "percentage": 5.70221752903907
+    },
+    {
+      "part": "neck",
+      "frame_count": 42,
+      "percentage": 4.435058078141499
+    },
+    {
+      "part": "leftUpLeg",
+      "frame_count": 35,
+      "percentage": 3.695881731784583
+    },
+    {
+      "part": "leftLeg",
+      "frame_count": 30,
+      "percentage": 3.167898627243928
+    },
+    {
+      "part": "spine",
+      "frame_count": 20,
+      "percentage": 2.1119324181626187
+    },
+    {
+      "part": "rightFoot",
+      "frame_count": 16,
+      "percentage": 1.689545934530095
+    },
+    {
+      "part": "rightToeBase",
+      "frame_count": 15,
+      "percentage": 1.583949313621964
+    },
+    {
+      "part": "rightHand",
+      "frame_count": 2,
+      "percentage": 0.21119324181626187
+    },
+    {
+      "part": "leftToeBase",
+      "frame_count": 2,
+      "percentage": 0.21119324181626187
+    },
+    {
+      "part": "leftFoot",
+      "frame_count": 2,
+      "percentage": 0.21119324181626187
+    },
+    {
+      "part": "leftForeArm",
+      "frame_count": 1,
+      "percentage": 0.10559662090813093
+    }
+  ],
+  "all_parts_frame_analysis": [
+    {
+      "part": "spine2",
+      "frame_count_with_gaze": 932,
+      "frame_count_without_gaze": 15,
+      "percentage_with_gaze": 98.41605068637803,
+      "percentage_without_gaze": 1.583949313621964,
+      "probability": 0.3669422269887303,
+      "total_gaze": 900384.8298598838
+    },
+    {
+      "part": "head",
+      "frame_count_with_gaze": 930,
+      "frame_count_without_gaze": 17,
+      "percentage_with_gaze": 98.20485744456178,
+      "percentage_without_gaze": 1.7951425554382259,
+      "probability": 0.22701252148297504,
+      "total_gaze": 557032.1851722704
+    },
+    {
+      "part": "neck",
+      "frame_count_with_gaze": 930,
+      "frame_count_without_gaze": 17,
+      "percentage_with_gaze": 98.20485744456178,
+      "percentage_without_gaze": 1.7951425554382259,
+      "probability": 0.15679961992397262,
+      "total_gaze": 384747.2128403377
+    },
+    {
+      "part": "hips",
+      "frame_count_with_gaze": 932,
+      "frame_count_without_gaze": 15,
+      "percentage_with_gaze": 98.41605068637803,
+      "percentage_without_gaze": 1.583949313621964,
+      "probability": 0.06701383802925513,
+      "total_gaze": 164435.26722827085
+    },
+    {
+      "part": "spine1",
+      "frame_count_with_gaze": 932,
+      "frame_count_without_gaze": 15,
+      "percentage_with_gaze": 98.41605068637803,
+      "percentage_without_gaze": 1.583949313621964,
+      "probability": 0.04539801111425566,
+      "total_gaze": 111395.4118841209
+    },
+    {
+      "part": "rightUpLeg",
+      "frame_count_with_gaze": 932,
+      "frame_count_without_gaze": 15,
+      "percentage_with_gaze": 98.41605068637803,
+      "percentage_without_gaze": 1.583949313621964,
+      "probability": 0.0351828295875556,
+      "total_gaze": 86329.900737081
+    },
+    {
+      "part": "spine",
+      "frame_count_with_gaze": 932,
+      "frame_count_without_gaze": 15,
+      "percentage_with_gaze": 98.41605068637803,
+      "percentage_without_gaze": 1.583949313621964,
+      "probability": 0.03315678913198928,
+      "total_gaze": 81358.50208982106
+    },
+    {
+      "part": "leftUpLeg",
+      "frame_count_with_gaze": 932,
+      "frame_count_without_gaze": 15,
+      "percentage_with_gaze": 98.41605068637803,
+      "percentage_without_gaze": 1.583949313621964,
+      "probability": 0.016213205679668902,
+      "total_gaze": 39783.168476328916
+    },
+    {
+      "part": "leftShoulder",
+      "frame_count_with_gaze": 932,
+      "frame_count_without_gaze": 15,
+      "percentage_with_gaze": 98.41605068637803,
+      "percentage_without_gaze": 1.583949313621964,
+      "probability": 0.013687868061738771,
+      "total_gaze": 33586.6189537562
+    },
+    {
+      "part": "rightHand",
+      "frame_count_with_gaze": 932,
+      "frame_count_without_gaze": 15,
+      "percentage_with_gaze": 98.41605068637803,
+      "percentage_without_gaze": 1.583949313621964,
+      "probability": 0.012030451417458465,
+      "total_gaze": 29519.731325385495
+    },
+    {
+      "part": "rightLeg",
+      "frame_count_with_gaze": 932,
+      "frame_count_without_gaze": 15,
+      "percentage_with_gaze": 98.41605068637803,
+      "percentage_without_gaze": 1.583949313621964,
+      "probability": 0.00947088626209852,
+      "total_gaze": 23239.195951093916
+    },
+    {
+      "part": "leftLeg",
+      "frame_count_with_gaze": 932,
+      "frame_count_without_gaze": 15,
+      "percentage_with_gaze": 98.41605068637803,
+      "percentage_without_gaze": 1.583949313621964,
+      "probability": 0.0060404599150229435,
+      "total_gaze": 14821.784119793925
+    },
+    {
+      "part": "leftArm",
+      "frame_count_with_gaze": 932,
+      "frame_count_without_gaze": 15,
+      "percentage_with_gaze": 98.41605068637803,
+      "percentage_without_gaze": 1.583949313621964,
+      "probability": 0.004307710386893115,
+      "total_gaze": 10570.048357796479
+    },
+    {
+      "part": "rightFoot",
+      "frame_count_with_gaze": 932,
+      "frame_count_without_gaze": 15,
+      "percentage_with_gaze": 98.41605068637803,
+      "percentage_without_gaze": 1.583949313621964,
+      "probability": 0.002895841300975545,
+      "total_gaze": 7105.673278535396
+    },
+    {
+      "part": "leftForeArm",
+      "frame_count_with_gaze": 932,
+      "frame_count_without_gaze": 15,
+      "percentage_with_gaze": 98.41605068637803,
+      "percentage_without_gaze": 1.583949313621964,
+      "probability": 0.0018536726857097223,
+      "total_gaze": 4548.451072080951
+    },
+    {
+      "part": "rightToeBase",
+      "frame_count_with_gaze": 931,
+      "frame_count_without_gaze": 16,
+      "percentage_with_gaze": 98.31045406546991,
+      "percentage_without_gaze": 1.689545934530095,
+      "probability": 0.0008187522703023096,
+      "total_gaze": 2009.0141427527217
+    },
+    {
+      "part": "leftHand",
+      "frame_count_with_gaze": 932,
+      "frame_count_without_gaze": 15,
+      "percentage_with_gaze": 98.41605068637803,
+      "percentage_without_gaze": 1.583949313621964,
+      "probability": 0.0004535333771767639,
+      "total_gaze": 1112.8579449582417
+    },
+    {
+      "part": "rightForeArm",
+      "frame_count_with_gaze": 932,
+      "frame_count_without_gaze": 15,
+      "percentage_with_gaze": 98.41605068637803,
+      "percentage_without_gaze": 1.583949313621964,
+      "probability": 0.00022402571712968784,
+      "total_gaze": 549.7033112197453
+    },
+    {
+      "part": "rightShoulder",
+      "frame_count_with_gaze": 932,
+      "frame_count_without_gaze": 15,
+      "percentage_with_gaze": 98.41605068637803,
+      "percentage_without_gaze": 1.583949313621964,
+      "probability": 0.00019594974927651266,
+      "total_gaze": 480.811879055932
+    },
+    {
+      "part": "leftFoot",
+      "frame_count_with_gaze": 932,
+      "frame_count_without_gaze": 15,
+      "percentage_with_gaze": 98.41605068637803,
+      "percentage_without_gaze": 1.583949313621964,
+      "probability": 0.00017354052916962427,
+      "total_gaze": 425.82523443121
+    },
+    {
+      "part": "rightArm",
+      "frame_count_with_gaze": 932,
+      "frame_count_without_gaze": 15,
+      "percentage_with_gaze": 98.41605068637803,
+      "percentage_without_gaze": 1.583949313621964,
+      "probability": 0.00012104234473903357,
+      "total_gaze": 297.0077656858046
+    },
+    {
+      "part": "leftToeBase",
+      "frame_count_with_gaze": 929,
+      "frame_count_without_gaze": 18,
+      "percentage_with_gaze": 98.09926082365365,
+      "percentage_without_gaze": 1.9007391763463568,
+      "probability": 6.643787949526742e-06,
+      "total_gaze": 16.30220084412226
+    },
+    {
+      "part": "rightHandIndex1",
+      "frame_count_with_gaze": 161,
+      "frame_count_without_gaze": 786,
+      "percentage_with_gaze": 17.00105596620908,
+      "percentage_without_gaze": 82.99894403379092,
+      "probability": 5.220267938148089e-07,
+      "total_gaze": 1.2809237295703308
+    },
+    {
+      "part": "leftHandIndex1",
+      "frame_count_with_gaze": 16,
+      "frame_count_without_gaze": 931,
+      "percentage_with_gaze": 1.689545934530095,
+      "percentage_without_gaze": 98.31045406546991,
+      "probability": 5.8229162849862636e-08,
+      "total_gaze": 0.14287986235791622
     }
   ]
 }

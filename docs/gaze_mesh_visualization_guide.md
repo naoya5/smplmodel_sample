@@ -1,8 +1,8 @@
-# T-poseメッシュ視線可視化システム使用ガイド
+# T-pose メッシュ視線可視化システム使用ガイド
 
 ## 概要
 
-T-poseメッシュ視線可視化システムは、SMPLモデルのT-pose（標準ポーズ）メッシュに視線データを適用し、視線の強度をカラーマップで可視化するツールです。フレーム別の視線パターンを3Dメッシュ上で直感的に理解することができます。
+T-pose メッシュ視線可視化システムは、SMPL モデルの T-pose（標準ポーズ）メッシュに視線データを適用し、視線の強度をカラーマップで可視化するツールです。フレーム別の視線パターンを 3D メッシュ上で直感的に理解することができます。
 
 ## システム構成
 
@@ -10,7 +10,7 @@ T-poseメッシュ視線可視化システムは、SMPLモデルのT-pose（標�
 
 1. **`src/gaze_mesh_visualizer.py`**: 視線メッシュ可視化の核となるクラス
 2. **`utils/gaze_mesh_viewer.py`**: コマンドライン実行インターフェース
-3. **`utils/create_tpose_mesh.py`**: SMPLモデルからT-poseメッシュ生成
+3. **`utils/create_tpose_mesh.py`**: SMPL モデルから T-pose メッシュ生成
 4. **`utils/create_sample_tpose.py`**: テスト用サンプルメッシュ生成
 
 ### 処理フロー
@@ -29,21 +29,22 @@ uv add numpy trimesh matplotlib pandas pillow scipy smplx
 
 ### 入力データ要件
 
-1. **T-poseメッシュファイル**: 
+1. **T-pose メッシュファイル**:
+
    - 形式: `.obj`
-   - 頂点数: 6890個（SMPLモデル標準）
+   - 頂点数: 6890 個（SMPL モデル標準）
    - 形状: T-pose（腕を水平に伸ばした標準ポーズ）
 
-2. **視線データファイル**: 
+2. **視線データファイル**:
    - 形式: `.npy`
    - データ形状: `(6890,)` または `(6890, 1)`
-   - 値: 各頂点への視線強度（0以上の実数）
+   - 値: 各頂点への視線強度（0 以上の実数）
 
 ## 基本的な使い方
 
-### 1. T-poseメッシュの準備
+### 1. T-pose メッシュの準備
 
-#### 方法A: SMPLモデルからT-poseメッシュを生成
+#### 方法 A: SMPL モデルから T-pose メッシュを生成
 
 ```bash
 # SMPLモデルファイルが必要
@@ -53,7 +54,7 @@ python utils/create_tpose_mesh.py SMPL_NEUTRAL.npz --output tpose_mesh.obj
 python utils/create_tpose_mesh.py SMPL_MALE.npz --gender male --output tpose_male.obj
 ```
 
-#### 方法B: サンプルT-poseメッシュの生成（テスト用）
+#### 方法 B: サンプル T-pose メッシュの生成（テスト用）
 
 ```bash
 python utils/create_sample_tpose.py
@@ -66,7 +67,7 @@ python utils/create_sample_tpose.py
 
 ```bash
 # 最も基本的な実行
-python utils/gaze_mesh_viewer.py sample_tpose.obj data/
+uv run utils/gaze_mesh_viewer.py tpose_mesh.obj data/
 
 # 詳細ログ付き実行
 python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --verbose
@@ -110,13 +111,13 @@ python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --colormap inferno
 
 #### カラーマップの特徴
 
-| カラーマップ | 特徴 | 用途 |
-|-------------|------|------|
-| `hot` | 黒→赤→黄→白 | 一般的な熱分布表示 |
-| `viridis` | 紫→青→緑→黄 | 科学的可視化に適用 |
-| `plasma` | 紫→ピンク→黄 | 高コントラスト表示 |
-| `cool` | 青→水色→緑 | 冷たい印象の可視化 |
-| `inferno` | 黒→紫→赤→黄 | 暗い背景に適用 |
+| カラーマップ | 特徴              | 用途               |
+| ------------ | ----------------- | ------------------ |
+| `hot`        | 黒 → 赤 → 黄 → 白 | 一般的な熱分布表示 |
+| `viridis`    | 紫 → 青 → 緑 → 黄 | 科学的可視化に適用 |
+| `plasma`     | 紫 → ピンク → 黄  | 高コントラスト表示 |
+| `cool`       | 青 → 水色 → 緑    | 冷たい印象の可視化 |
+| `inferno`    | 黒 → 紫 → 赤 → 黄 | 暗い背景に適用     |
 
 ### 正規化方式
 
@@ -144,7 +145,7 @@ python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --format stl
 
 ```bash
 # 画像解像度設定
-python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --resolution 1920 1080
+uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/ --resolution 1920 1080
 
 # 視点角度設定
 python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --view-angle 30 60
@@ -177,25 +178,25 @@ output/gaze_meshes/
 
 #### 1. 視線メッシュファイル (`gaze_frame_XXXXXX.obj`)
 
-- **形式**: Wavefront OBJ形式
-- **内容**: T-poseメッシュの各頂点に視線強度に応じた色が適用
-- **用途**: 3Dソフトウェアでの詳細分析、アニメーション作成
+- **形式**: Wavefront OBJ 形式
+- **内容**: T-pose メッシュの各頂点に視線強度に応じた色が適用
+- **用途**: 3D ソフトウェアでの詳細分析、アニメーション作成
 
 #### 2. 可視化画像 (`gaze_frame_XXXXXX.png`)
 
-- **形式**: PNG画像
-- **内容**: 3D視点からの視線メッシュレンダリング
+- **形式**: PNG 画像
+- **内容**: 3D 視点からの視線メッシュレンダリング
 - **用途**: プレゼンテーション、レポート作成
 
 #### 3. カラーバー凡例 (`colorbar_legend.png`)
 
-- **形式**: PNG画像
+- **形式**: PNG 画像
 - **内容**: 視線強度とカラーマップの対応関係
 - **用途**: 可視化結果の解釈、論文・レポートでの参照
 
 ## 実践的な使用例
 
-### 例1: 単一フレームの詳細分析
+### 例 1: 単一フレームの詳細分析
 
 ```bash
 # フレーム76の詳細分析
@@ -209,7 +210,7 @@ python utils/gaze_mesh_viewer.py sample_tpose.obj data/ \
 
 **用途**: 特定フレームの視線パターンの詳細分析
 
-### 例2: 時系列比較分析
+### 例 2: 時系列比較分析
 
 ```bash
 # 連続フレームの比較
@@ -222,7 +223,7 @@ python utils/gaze_mesh_viewer.py sample_tpose.obj data/ \
 
 **用途**: 時間経過による視線パターンの変化分析
 
-### 例3: プレゼンテーション用画像作成
+### 例 3: プレゼンテーション用画像作成
 
 ```bash
 # 高解像度画像の作成
@@ -236,7 +237,7 @@ python utils/gaze_mesh_viewer.py sample_tpose.obj data/ \
 
 **用途**: 学会発表、論文掲載用の高品質画像
 
-### 例4: 大量フレームの一括処理
+### 例 4: 大量フレームの一括処理
 
 ```bash
 # 全フレームのメッシュ生成（画像なし）
@@ -247,7 +248,7 @@ python utils/gaze_mesh_viewer.py sample_tpose.obj data/ \
     --output batch_processing/
 ```
 
-**用途**: 3Dソフトウェアでのアニメーション作成
+**用途**: 3D ソフトウェアでのアニメーション作成
 
 ## プログラム内での使用
 
@@ -313,6 +314,7 @@ ModuleNotFoundError: No module named 'trimesh'
 ```
 
 **解決方法**:
+
 ```bash
 uv add trimesh matplotlib pandas pillow scipy
 ```
@@ -324,8 +326,9 @@ uv add trimesh matplotlib pandas pillow scipy
 ```
 
 **解決方法**:
-- T-poseメッシュが6890頂点を持つことを確認
-- 適切なSMPLモデルから生成されたメッシュを使用
+
+- T-pose メッシュが 6890 頂点を持つことを確認
+- 適切な SMPL モデルから生成されたメッシュを使用
 
 #### 3. 画像生成エラー
 
@@ -334,8 +337,9 @@ uv add trimesh matplotlib pandas pillow scipy
 ```
 
 **解決方法**:
-- 自動的にmatplotlibフォールバックが実行されます
-- より高品質な3D描画が必要な場合: `uv add pyglet`
+
+- 自動的に matplotlib フォールバックが実行されます
+- より高品質な 3D 描画が必要な場合: `uv add pyglet`
 
 #### 4. メモリ不足エラー
 
@@ -344,6 +348,7 @@ MemoryError: Unable to allocate array
 ```
 
 **解決方法**:
+
 - フレーム範囲を制限: `--frame-range 0 100`
 - 画像出力を無効化: `--no-images`
 - より小さな解像度を使用: `--resolution 800 600`
@@ -364,11 +369,13 @@ logging.basicConfig(level=logging.DEBUG)
 ### 処理速度の改善
 
 1. **画像生成のスキップ**:
+
    ```bash
    python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --no-images
    ```
 
 2. **フレーム範囲の制限**:
+
    ```bash
    python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --frame-range 0 50
    ```
@@ -381,10 +388,11 @@ logging.basicConfig(level=logging.DEBUG)
 ### メモリ使用量の削減
 
 1. **バッチサイズの調整**:
-   - 1000フレーム以上の場合は分割処理を推奨
+
+   - 1000 フレーム以上の場合は分割処理を推奨
 
 2. **ファイル形式の選択**:
-   - STL形式は最も軽量: `--format stl`
+   - STL 形式は最も軽量: `--format stl`
 
 ## カスタマイズ
 
@@ -471,12 +479,12 @@ python utils/gaze_mesh_viewer.py sample_tpose.obj data/subject_B/ \
 
 ## まとめ
 
-T-poseメッシュ視線可視化システムは、視線データの3D可視化を通じて、人間の視線パターンを直感的に理解するための強力なツールです。コマンドライン操作とプログラム内使用の両方に対応し、研究から実用的な分析まで幅広く活用できます。
+T-pose メッシュ視線可視化システムは、視線データの 3D 可視化を通じて、人間の視線パターンを直感的に理解するための強力なツールです。コマンドライン操作とプログラム内使用の両方に対応し、研究から実用的な分析まで幅広く活用できます。
 
 詳細な機能や技術仕様については、以下のドキュメントも参照してください：
 
 - [`gaze_part_analysis_guide.md`](./gaze_part_analysis_guide.md): 部位別視線分析システム
-- [`api_reference.md`](./api_reference.md): API詳細仕様
+- [`api_reference.md`](./api_reference.md): API 詳細仕様
 - [`tutorial.md`](./tutorial.md): 基本的なチュートリアル
 
 ---

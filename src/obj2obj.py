@@ -136,7 +136,7 @@ def color_obj_smpl(obj_path, part_name="head", color=[1.0, 0.0, 0.0]):
 
 # obj ファイルに色付け
 mesh2 = color_obj_smpl(
-    obj_path="tpose_mesh.obj",
+    obj_path="output/gaze_meshes/gaze_frame_000076.obj",
     part_name="neck",
     color=[0.0, 1.0, 0.0],
 )
