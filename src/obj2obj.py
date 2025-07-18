@@ -93,8 +93,33 @@ def process_4d_humans_pkl_smpl(
 
 def color_obj_smpl(obj_path, part_name="head", color=[1.0, 0.0, 0.0]):
     """既存の .obj ファイルを読み込み、指定部位を色付けして返す"""
-    mesh = trimesh.load(obj_path, process=False)
-    return color_part_on_mesh(mesh, part_name, color)
+    try:
+        # OBJファイルの読み込み
+        mesh = trimesh.load(obj_path, process=False)
+
+        # Scene オブジェクトの場合は最初のメッシュを取得
+        if not isinstance(mesh, trimesh.Trimesh):
+            if hasattr(mesh, "geometry") and len(mesh.geometry) > 0:
+                mesh = list(mesh.geometry.values())[0]
+            else:
+                raise ValueError(f"有効なメッシュが見つかりません: {obj_path}")
+
+        print(f"メッシュ情報:")
+        print(f"  頂点数: {len(mesh.vertices)}")
+        print(f"  面数: {len(mesh.faces)}")
+        print(f"  境界: {mesh.bounds}")
+
+        # 部位別着色を適用
+        colored_mesh = color_part_on_mesh(mesh, part_name, color)
+        return colored_mesh
+
+    except Exception as e:
+        print(f"エラー: OBJファイルの読み込みに失敗しました: {e}")
+        print(f"ファイルパス: {obj_path}")
+        import traceback
+
+        traceback.print_exc()
+        return None
 
 
 # 使用例:
@@ -111,8 +136,37 @@ def color_obj_smpl(obj_path, part_name="head", color=[1.0, 0.0, 0.0]):
 
 # obj ファイルに色付け
 mesh2 = color_obj_smpl(
-    obj_path="demo_out/skates_1.obj",
+    obj_path="tpose_mesh.obj",
     part_name="neck",
     color=[0.0, 1.0, 0.0],
 )
-mesh2.show()
+
+if mesh2 is not None:
+    try:
+        # 表示の試行
+        print("メッシュの可視化を試行中...")
+        mesh2.show()
+    except Exception as e:
+        print(f"可視化エラー: {e}")
+        print("代替案: ファイルに保存します...")
+
+        # 代替案: ファイル保存
+        try:
+            output_path = "colored_mesh_output.obj"
+            mesh2.export(output_path)
+            print(f"メッシュを保存しました: {output_path}")
+
+            # 画像として保存も試行
+            try:
+                from lib.obj_visualizer import quick_visualize
+
+                image_path = "colored_mesh_output.png"
+                quick_visualize(output_path, image_path)
+                print(f"可視化画像を保存しました: {image_path}")
+            except Exception as viz_e:
+                print(f"画像保存エラー: {viz_e}")
+
+        except Exception as save_e:
+            print(f"ファイル保存エラー: {save_e}")
+else:
+    print("メッシュの作成に失敗しました")

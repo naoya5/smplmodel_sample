@@ -597,6 +597,15 @@ wheels = [
 ]
 
 [[package]]
+name = "pyglet"
+version = "1.5.31"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f7/c0/59130a7edbcc8f84e35870b00a712538ca05415ff02d17181277b8ef8f05/pyglet-1.5.31.zip", hash = "sha256:a5e422b4c27b0fc99e92103bf493109cca5c18143583b868b3b4631a98ae9417", size = 6900712 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e2/43/46aa0ab49f2f5145d201780c7595cf0c305fb4fb5d00d6639792a3d0e770/pyglet-1.5.31-py3-none-any.whl", hash = "sha256:f68413564bbec380e4815898fef0fb7a4a494dc3f8718bfbf28ce2a802634c88", size = 1143660 },
+]
+
+[[package]]
 name = "pyparsing"
 version = "3.2.3"
 source = { registry = "https://pypi.org/simple" }
@@ -760,6 +769,7 @@ dependencies = [
     { name = "numpy" },
     { name = "pandas" },
     { name = "pillow" },
+    { name = "pyglet" },
     { name = "requests" },
     { name = "scikit-learn" },
     { name = "scipy" },
@@ -780,6 +790,7 @@ requires-dist = [
     { name = "numpy", specifier = ">=2.3.1" },
     { name = "pandas", specifier = ">=2.3.1" },
     { name = "pillow", specifier = ">=11.3.0" },
+    { name = "pyglet", specifier = "<2" },
     { name = "requests", specifier = ">=2.32.4" },
     { name = "scikit-learn", specifier = ">=1.7.0" },
     { name = "scipy", specifier = ">=1.16.0" },

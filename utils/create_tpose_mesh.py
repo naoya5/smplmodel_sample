@@ -43,7 +43,25 @@ def create_tpose_mesh(smpl_model_path: Path,
     print(f"性別: {gender}")
     
     # SMPLモデルの読み込み
-    smpl_model = SMPL(model_path=str(smpl_model_path))
+    # smplxライブラリ用に適切な形式でモデルを読み込み
+    try:
+        # 既存のファイルを直接使用
+        smpl_model = SMPL(model_path=str(smpl_model_path.parent), gender=gender)
+    except Exception as e:
+        # ファイル名を変更して再試行
+        print(f"標準的な読み込みに失敗: {e}")
+        print("代替手段を試行中...")
+        
+        # ファイルを期待される名前でコピー
+        expected_name = f"SMPL_{gender.upper()}.pkl"
+        expected_path = smpl_model_path.parent / expected_name
+        
+        if not expected_path.exists():
+            import shutil
+            shutil.copy2(smpl_model_path, expected_path)
+            print(f"ファイルをコピー: {smpl_model_path} -> {expected_path}")
+        
+        smpl_model = SMPL(model_path=str(smpl_model_path.parent), gender=gender)
     
     # T-pose（すべてのパラメータをゼロに設定）
     batch_size = 1

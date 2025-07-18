@@ -249,6 +249,19 @@ class GazePartAnalyzer:
             if max_part:
                 max_parts_count[max_part] = max_parts_count.get(max_part, 0) + 1
         
+        # 全部位のフレーム集計を計算
+        all_parts_frame_analysis = []
+        for part_name, part_info in sorted_parts:
+            frame_count = sum(1 for frame in self.frame_results 
+                             if frame["part_values"].get(part_name, 0) > 0)
+            all_parts_frame_analysis.append({
+                "part": part_name,
+                "frame_count": frame_count,
+                "percentage": frame_count / len(self.frame_results) * 100,
+                "probability": part_info["probability"],
+                "total_gaze": part_info["total_gaze"]
+            })
+        
         summary = {
             "total_frames": len(self.frame_results),
             "total_parts": len(self.part_results),
@@ -268,7 +281,8 @@ class GazePartAnalyzer:
                     "percentage": count / len(self.frame_results) * 100
                 }
                 for part, count in sorted(max_parts_count.items(), key=lambda x: x[1], reverse=True)[:5]
-            ]
+            ],
+            "all_parts_frame_analysis": all_parts_frame_analysis
         }
         
         return summary

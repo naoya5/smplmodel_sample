@@ -1,0 +1,93 @@
+{
+  "total_frames": 947,
+  "total_parts": 24,
+  "top_parts_by_probability": [
+    {
+      "part": "spine2",
+      "probability": 0.3669422269887303,
+      "total_gaze": 900384.8298598838,
+      "avg_per_frame": 950.7759555014612
+    },
+    {
+      "part": "head",
+      "probability": 0.22701252148297504,
+      "total_gaze": 557032.1851722704,
+      "avg_per_frame": 588.2071649126403
+    },
+    {
+      "part": "neck",
+      "probability": 0.15679961992397262,
+      "total_gaze": 384747.2128403377,
+      "avg_per_frame": 406.2800557976111
+    },
+    {
+      "part": "hips",
+      "probability": 0.06701383802925513,
+      "total_gaze": 164435.26722827085,
+      "avg_per_frame": 173.63808577430925
+    },
+    {
+      "part": "spine1",
+      "probability": 0.04539801111425566,
+      "total_gaze": 111395.4118841209,
+      "avg_per_frame": 117.62979079632619
+    },
+    {
+      "part": "rightUpLeg",
+      "probability": 0.0351828295875556,
+      "total_gaze": 86329.900737081,
+      "avg_per_frame": 91.16145801170116
+    },
+    {
+      "part": "spine",
+      "probability": 0.03315678913198928,
+      "total_gaze": 81358.50208982106,
+      "avg_per_frame": 85.91182902832213
+    },
+    {
+      "part": "leftUpLeg",
+      "probability": 0.016213205679668902,
+      "total_gaze": 39783.168476328916,
+      "avg_per_frame": 42.0096816011921
+    },
+    {
+      "part": "leftShoulder",
+      "probability": 0.013687868061738771,
+      "total_gaze": 33586.6189537562,
+      "avg_per_frame": 35.46633469245639
+    },
+    {
+      "part": "rightHand",
+      "probability": 0.012030451417458465,
+      "total_gaze": 29519.731325385495,
+      "avg_per_frame": 31.171838780766098
+    }
+  ],
+  "most_attended_frames": [
+    {
+      "part": "spine2",
+      "frame_count": 438,
+      "percentage": 46.25131995776135
+    },
+    {
+      "part": "hips",
+      "frame_count": 81,
+      "percentage": 8.553326293558607
+    },
+    {
+      "part": "head",
+      "frame_count": 73,
+      "percentage": 7.708553326293559
+    },
+    {
+      "part": "spine1",
+      "frame_count": 66,
+      "percentage": 6.9693769799366425
+    },
+    {
+      "part": "rightLeg",
+      "frame_count": 55,
+      "percentage": 5.807814149947202
+    }
+  ]
+}

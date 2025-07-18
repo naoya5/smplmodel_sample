@@ -1,1 +1,9 @@
 data/
+objfile/
+smpl/
+*.pyc
+*.pyo
+*.pyd
+*.pyw
+*.pyz
+*.pywz
