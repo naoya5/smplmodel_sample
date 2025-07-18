@@ -1,0 +1,12 @@
+{
+  "total_frames": 947,
+  "total_vertices": 6890,
+  "max_gaze_value": 1.0,
+  "min_gaze_value": 0.0,
+  "mean_gaze_value": 0.02114212643209481,
+  "std_gaze_value": 0.07806970407075557,
+  "vertices_above_threshold": 1817,
+  "colormap": "hot",
+  "alpha": 0.8,
+  "min_threshold": 0.01
+}

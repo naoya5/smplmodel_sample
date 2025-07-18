@@ -1,5 +1,5 @@
 import os
 import trimesh
 
-mesh = trimesh.load("gaze_frame_000079.obj")
+mesh = trimesh.load("results/User11/mesh/gaze_frame_000076.obj")
 mesh.show()
