@@ -21,14 +21,16 @@ import requests
 class GazePartAnalyzer:
     """視線データの部位別分析を行うクラス"""
     
-    def __init__(self, segmentation_file: str = "smpl_vert_segmentation.json"):
+    def __init__(self, segmentation_file: str = "smpl_vert_segmentation.json", frame_rate: float = 90.0):
         """
         初期化
         
         Args:
             segmentation_file: SMPLモデルの頂点セグメンテーションファイルパス
+            frame_rate: フレームレート（Hz）
         """
         self.segmentation_file = segmentation_file
+        self.frame_rate = frame_rate
         self.segmentation_data: Optional[Dict[str, List[int]]] = None
         self.gaze_data: Dict[int, np.ndarray] = {}
         self.part_results: Dict[str, Dict[str, Any]] = {}
@@ -174,6 +176,38 @@ class GazePartAnalyzer:
         self.part_results = part_results
         return part_results
     
+    def get_timestamp_from_frame(self, frame_num: int) -> float:
+        """
+        フレーム番号から時間（秒）を計算
+        
+        Args:
+            frame_num: フレーム番号
+            
+        Returns:
+            時間（秒）
+        """
+        return frame_num / self.frame_rate
+    
+    def get_time_formatted(self, frame_num: int) -> str:
+        """
+        フレーム番号から時:分:秒形式の文字列を生成
+        
+        Args:
+            frame_num: フレーム番号
+            
+        Returns:
+            時:分:秒形式の文字列
+        """
+        total_seconds = self.get_timestamp_from_frame(frame_num)
+        hours = int(total_seconds // 3600)
+        minutes = int((total_seconds % 3600) // 60)
+        seconds = total_seconds % 60
+        
+        if hours > 0:
+            return f"{hours}:{minutes:02d}:{seconds:06.3f}"
+        else:
+            return f"{minutes}:{seconds:06.3f}"
+    
     def analyze_frame_attention(self) -> List[Dict[str, Any]]:
         """
         フレームごとの最大注視部位分析
@@ -191,6 +225,7 @@ class GazePartAnalyzer:
         for frame_num in sorted(self.gaze_data.keys()):
             frame_data = {
                 "frame": frame_num,
+                "timestamp": frame_num / self.frame_rate,
                 "part_values": {},
                 "max_part": None,
                 "max_value": 0.0,
@@ -224,6 +259,49 @@ class GazePartAnalyzer:
         print(f"{len(frame_results)}フレームの分析が完了")
         self.frame_results = frame_results
         return frame_results
+    
+    def detect_gaze_changes(self, min_change_threshold: float = 0.1) -> List[Dict[str, Any]]:
+        """
+        視線変化を検出してJSON形式で記録
+        
+        Args:
+            min_change_threshold: 変化とみなす最小閾値（0.0-1.0）
+            
+        Returns:
+            視線変化のリスト
+        """
+        if not self.frame_results:
+            raise ValueError("フレーム別分析結果が準備されていません")
+        
+        changes = []
+        previous_max_part = None
+        
+        for frame_result in self.frame_results:
+            current_max_part = frame_result["max_part"]
+            current_ratio = frame_result["part_ratios"].get(current_max_part, 0) if current_max_part else 0
+            
+            # 変化があり、かつ閾値を超えている場合
+            if (previous_max_part != current_max_part and 
+                current_max_part is not None and 
+                current_ratio >= min_change_threshold):
+                
+                timestamp = frame_result.get("timestamp", self.get_timestamp_from_frame(frame_result["frame"]))
+                time_str = self.get_time_formatted(frame_result["frame"])
+                
+                change_data = {
+                    "timestamp": round(timestamp, 3),
+                    "time_formatted": time_str,
+                    "frame": frame_result["frame"],
+                    "from_part": previous_max_part,
+                    "to_part": current_max_part,
+                    "confidence": round(current_ratio, 3),
+                    "description": f"{timestamp:.1f}秒: {previous_max_part or '無し'}から{current_max_part}に移動"
+                }
+                changes.append(change_data)
+            
+            previous_max_part = current_max_part
+        
+        return changes
     
     def get_summary_statistics(self) -> Dict[str, Any]:
         """
@@ -304,6 +382,10 @@ class GazePartAnalyzer:
         
         print(f"\n総フレーム数: {summary['total_frames']}")
         print(f"分析対象部位数: {summary['total_parts']}")
+        if self.frame_results:
+            total_duration = self.get_timestamp_from_frame(max(f["frame"] for f in self.frame_results))
+            print(f"総再生時間: {self.get_time_formatted(max(f['frame'] for f in self.frame_results))} ({total_duration:.3f}秒)")
+            print(f"フレームレート: {self.frame_rate}Hz")
         
         print("\n【部位別視線確率 (上位10位)】")
         print("-" * 50)
@@ -324,11 +406,24 @@ class GazePartAnalyzer:
         for frame_result in self.frame_results[:10]:
             max_part = frame_result["max_part"]
             max_ratio = frame_result["part_ratios"].get(max_part, 0) * 100 if max_part else 0
-            print(f"フレーム {frame_result['frame']:06d}: "
+            timestamp = frame_result.get("timestamp", self.get_timestamp_from_frame(frame_result["frame"]))
+            time_str = self.get_time_formatted(frame_result["frame"])
+            print(f"フレーム {frame_result['frame']:06d} ({time_str}): "
                   f"{max_part:15s} ({max_ratio:5.1f}%)")
         
         if len(self.frame_results) > 10:
             print(f"... (残り{len(self.frame_results) - 10}フレーム)")
+        
+        # 視線変化情報を表示
+        gaze_changes = self.detect_gaze_changes()
+        print(f"\n【視線変化検出 (最初の10件)】")
+        print("-" * 50)
+        for i, change in enumerate(gaze_changes[:10], 1):
+            print(f"{i:2d}. {change['description']}")
+        
+        if len(gaze_changes) > 10:
+            print(f"... (残り{len(gaze_changes) - 10}件の変化)")
+        print(f"総変化回数: {len(gaze_changes)}回")
     
     def export_results(self, output_dir: Path = Path("output")) -> Dict[str, Path]:
         """
@@ -365,6 +460,8 @@ class GazePartAnalyzer:
         for frame_result in self.frame_results:
             row = {
                 "frame": frame_result["frame"],
+                "timestamp": frame_result.get("timestamp", self.get_timestamp_from_frame(frame_result["frame"])),
+                "time_formatted": self.get_time_formatted(frame_result["frame"]),
                 "max_part": frame_result["max_part"],
                 "max_value": frame_result["max_value"],
                 "total_gaze": frame_result["total_gaze"]
@@ -385,6 +482,18 @@ class GazePartAnalyzer:
         with open(summary_json_path, "w", encoding="utf-8") as f:
             json.dump(summary, f, indent=2, ensure_ascii=False)
         output_files["summary"] = summary_json_path
+        
+        # JSON: 視線変化データ
+        changes_json_path = output_dir / "gaze_changes.json"
+        gaze_changes = self.detect_gaze_changes()
+        change_data = {
+            "frame_rate": self.frame_rate,
+            "total_changes": len(gaze_changes),
+            "changes": gaze_changes
+        }
+        with open(changes_json_path, "w", encoding="utf-8") as f:
+            json.dump(change_data, f, indent=2, ensure_ascii=False)
+        output_files["gaze_changes"] = changes_json_path
         
         print(f"\n結果を出力しました:")
         for key, path in output_files.items():

@@ -112,8 +112,12 @@ python utils/gaze_part_viewer.py data/ --segmentation my_segmentation.json
 from src.gaze_part_analyzer import GazePartAnalyzer
 from pathlib import Path
 
-# 分析器の初期化
-analyzer = GazePartAnalyzer()
+# 分析器の初期化（90Hzサンプリングレート）
+analyzer = GazePartAnalyzer(frame_rate=90.0)
+
+# 他のフレームレートも指定可能
+analyzer_30fps = GazePartAnalyzer(frame_rate=30.0)  # 30fps
+analyzer_60fps = GazePartAnalyzer(frame_rate=60.0)  # 60fps
 
 # データ読み込みと分析実行
 analyzer.run_analysis(
@@ -125,6 +129,13 @@ analyzer.run_analysis(
 summary = analyzer.get_summary_statistics()
 part_results = analyzer.part_results
 frame_results = analyzer.frame_results
+
+# 時間変換機能の使用
+timestamp = analyzer.get_timestamp_from_frame(100)  # フレーム100の秒数
+time_str = analyzer.get_time_formatted(100)  # "0:01.111"形式
+
+# 視線変化検出
+gaze_changes = analyzer.detect_gaze_changes(min_change_threshold=0.1)
 ```
 
 ## 出力ファイル
@@ -146,14 +157,20 @@ frame_results = analyzer.frame_results
 
 各フレームの詳細データを含む CSV ファイル：
 
-| 列名            | 説明                 |
-| --------------- | -------------------- |
-| frame           | フレーム番号         |
-| max_part        | 最大注視部位         |
-| max_value       | 最大視線値           |
-| total_gaze      | フレーム内視線値合計 |
-| {部位名}\_value | 各部位の視線値       |
-| {部位名}\_ratio | 各部位の視線割合     |
+| 列名            | 説明                     |
+| --------------- | ------------------------ |
+| frame           | フレーム番号             |
+| timestamp       | 時間（秒）               |
+| time_formatted  | 時:分:秒形式の時間       |
+| max_part        | 最大注視部位             |
+| max_value       | 最大視線値               |
+| total_gaze      | フレーム内視線値合計     |
+| {部位名}\_value | 各部位の視線値           |
+| {部位名}\_ratio | 各部位の視線割合         |
+
+**時間情報の例**:
+- `timestamp`: `3.222` (3.222秒)
+- `time_formatted`: `0:03.222` (0分3.222秒)
 
 ### 3. 統計サマリー (`gaze_analysis_summary.json`)
 
@@ -179,7 +196,47 @@ frame_results = analyzer.frame_results
 }
 ```
 
-### 4. 可視化グラフ (`gaze_part_analysis.png`)
+### 4. 視線変化分析結果 (`gaze_changes.json`)
+
+視線の部位間移動を時系列で記録した JSON ファイル：
+
+```json
+{
+  "frame_rate": 90.0,
+  "total_changes": 15,
+  "changes": [
+    {
+      "timestamp": 3.200,
+      "time_formatted": "0:03.200",
+      "frame": 288,
+      "from_part": "head",
+      "to_part": "rightHand",
+      "confidence": 0.456,
+      "description": "3.2秒: headからrightHandに移動"
+    },
+    {
+      "timestamp": 5.678,
+      "time_formatted": "0:05.678",
+      "frame": 511,
+      "from_part": "rightHand",
+      "to_part": "leftArm",
+      "confidence": 0.321,
+      "description": "5.7秒: rightHandからleftArmに移動"
+    }
+  ]
+}
+```
+
+**フィールド説明**:
+- `timestamp`: 変化が発生した時間（秒）
+- `time_formatted`: 時:分:秒形式の時間
+- `frame`: 該当フレーム番号
+- `from_part`: 変化前の注視部位
+- `to_part`: 変化後の注視部位
+- `confidence`: 新しい部位への視線集中度（0.0-1.0）
+- `description`: 変化の日本語説明
+
+### 5. 可視化グラフ (`gaze_part_analysis.png`)
 
 2 つのグラフを含む PNG 画像：
 
@@ -319,8 +376,9 @@ smplmodel_sample/
 │   └── *.npy                      # 視線データファイル
 ├── output/
 │   ├── part_gaze_analysis.csv     # 部位別結果
-│   ├── frame_gaze_analysis.csv    # フレーム別結果
+│   ├── frame_gaze_analysis.csv    # フレーム別結果（時間情報付き）
 │   ├── gaze_analysis_summary.json # 統計サマリー
+│   ├── gaze_changes.json          # 視線変化分析結果
 │   └── gaze_part_analysis.png     # 可視化グラフ
 └── smpl_vert_segmentation.json    # 部位セグメンテーション
 ```
@@ -361,15 +419,123 @@ logging.basicConfig(level=logging.DEBUG)
 analyzer = GazePartAnalyzer()
 ```
 
+## 新機能: 時間軸分析と視線変化検出 (v2.0)
+
+### 時間変換機能
+
+90Hzサンプリングレートに対応した高精度な時間変換機能を提供：
+
+#### 主要機能
+
+1. **フレーム→秒数変換**
+   ```python
+   timestamp = analyzer.get_timestamp_from_frame(270)  # 3.0秒
+   ```
+
+2. **時:分:秒形式での表示**
+   ```python
+   time_str = analyzer.get_time_formatted(270)  # "0:03.000"
+   ```
+
+3. **フレームレート設定**
+   ```python
+   # 90Hz（デフォルト）
+   analyzer = GazePartAnalyzer(frame_rate=90.0)
+   
+   # その他のフレームレート
+   analyzer = GazePartAnalyzer(frame_rate=30.0)   # 30fps
+   analyzer = GazePartAnalyzer(frame_rate=60.0)   # 60fps
+   analyzer = GazePartAnalyzer(frame_rate=120.0)  # 120fps
+   ```
+
+### 視線変化検出機能
+
+部位間の視線移動を自動検出し、時系列で記録：
+
+#### 検出アルゴリズム
+
+1. **変化の定義**: フレーム間で最大注視部位が変化
+2. **閾値設定**: 新しい部位への視線集中度が設定値以上
+3. **時間記録**: 変化発生時刻を秒数と時:分:秒で記録
+
+#### 使用例
+
+```python
+# 視線変化検出（閾値10%）
+changes = analyzer.detect_gaze_changes(min_change_threshold=0.1)
+
+# 結果の例
+for change in changes:
+    print(f"{change['description']}")
+    # 出力: "3.2秒: headからrightHandに移動"
+```
+
+#### 出力例
+
+```json
+{
+  "timestamp": 3.200,
+  "time_formatted": "0:03.200",
+  "frame": 288,
+  "from_part": "head",
+  "to_part": "rightHand", 
+  "confidence": 0.456,
+  "description": "3.2秒: headからrightHandに移動"
+}
+```
+
+### 拡張された出力ファイル
+
+#### 1. frame_gaze_analysis.csv の拡張
+
+新しく追加された列：
+- `timestamp`: 秒数での時間
+- `time_formatted`: 時:分:秒形式の時間
+
+#### 2. gaze_changes.json の新規追加
+
+視線変化の詳細ログ：
+- 変化発生時刻
+- 変化前後の部位
+- 視線集中度
+- 日本語での変化説明
+
+### 分析結果の表示拡張
+
+コンソール出力に以下の情報が追加：
+
+```
+総フレーム数: 150
+分析対象部位数: 24
+総再生時間: 0:01.667 (1.667秒)
+フレームレート: 90Hz
+
+【フレーム別詳細 (最初の10フレーム)】
+フレーム 000076 (0:00.844): head           (52.3%)
+フレーム 000077 (0:00.856): head           (48.1%)
+
+【視線変化検出 (最初の10件)】
+ 1. 3.2秒: headからrightHandに移動
+ 2. 5.7秒: rightHandからleftArmに移動
+総変化回数: 15回
+```
+
+### パフォーマンス最適化
+
+- **計算効率**: 時間変換はリアルタイム計算（キャッシュ不要）
+- **メモリ効率**: 既存データ構造に時間情報を統合
+- **処理速度**: 変化検出は線形時間O(n)で実行
+
 ## 今後の拡張可能性
 
 ### 機能拡張案
 
-1. **時系列分析**: 視線の時間的変化パターンの分析
+1. ~~**時系列分析**: 視線の時間的変化パターンの分析~~ ✅ **実装済み**
 2. **クラスタリング**: 類似の視線パターンのグループ化
 3. **ヒートマップ**: 3D メッシュ上での視線密度可視化
 4. **統計検定**: 部位間視線差の有意性検定
 5. **機械学習**: 視線パターンの自動分類
+6. **変化パターン分析**: 典型的な視線移動シーケンスの抽出
 
 ### カスタマイズ
 
@@ -384,6 +550,38 @@ custom_segmentation = {
 def custom_metric(gaze_data, part_vertices):
     return np.std(gaze_data[part_vertices])  # 視線のばらつき
 ```
+
+## 変更履歴
+
+### v2.0 (2025-07-24)
+
+**新機能**:
+- ✅ 90Hzサンプリングレート対応の時間変換機能
+- ✅ フレーム番号から秒数・時:分:秒形式への変換
+- ✅ 視線変化検出機能（部位間移動の自動検出）
+- ✅ JSON形式での視線変化ログ出力
+- ✅ CSV出力への時間情報列追加
+- ✅ コンソール表示の時間情報拡張
+
+**技術仕様**:
+- `GazePartAnalyzer`クラスに`frame_rate`パラメータ追加
+- `get_timestamp_from_frame()`メソッド追加
+- `get_time_formatted()`メソッド追加
+- `detect_gaze_changes()`メソッド追加
+- `gaze_changes.json`ファイル出力追加
+
+**出力ファイルの変更**:
+- `frame_gaze_analysis.csv`: `timestamp`, `time_formatted`列を追加
+- `gaze_changes.json`: 新規ファイル追加
+
+### v1.0 (初期リリース)
+
+**基本機能**:
+- 視線データの部位別分析
+- CSV/JSON形式での結果出力
+- 可視化グラフ生成
+- SMPL 24部位対応
+- フレーム別最大注視部位分析
 
 ## 参考資料
 
