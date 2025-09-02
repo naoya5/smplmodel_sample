@@ -22,7 +22,7 @@
 
 # 基本的な使用
 
-python create_gaze_heatmap.py results/User11/
+uv run create_gaze_heatmap.py results/User11/
 models/SMPL_NEUTRAL.pkl
 
 # カスタム設定

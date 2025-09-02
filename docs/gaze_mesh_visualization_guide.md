@@ -48,16 +48,16 @@ uv add numpy trimesh matplotlib pandas pillow scipy smplx
 
 ```bash
 # SMPLモデルファイルが必要
-python utils/create_tpose_mesh.py SMPL_NEUTRAL.npz --output tpose_mesh.obj
+uv run utils/create_tpose_mesh.py SMPL_NEUTRAL.npz --output tpose_mesh.obj
 
 # 性別指定
-python utils/create_tpose_mesh.py SMPL_MALE.npz --gender male --output tpose_male.obj
+uv run utils/create_tpose_mesh.py SMPL_MALE.npz --gender male --output tpose_male.obj
 ```
 
 #### 方法 B: サンプル T-pose メッシュの生成（テスト用）
 
 ```bash
-python utils/create_sample_tpose.py
+uv run utils/create_sample_tpose.py
 # → sample_tpose.obj が生成される
 ```
 
@@ -70,30 +70,30 @@ python utils/create_sample_tpose.py
 uv run utils/gaze_mesh_viewer.py tpose_mesh.obj data/
 
 # 詳細ログ付き実行
-python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --verbose
+uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/ --verbose
 ```
 
 #### 単一フレーム処理
 
 ```bash
 # フレーム76のみ処理
-python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --single-frame 76
+uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/ --single-frame 76
 
 # 出力先指定
-python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --single-frame 76 --output results/
+uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/ --single-frame 76 --output results/
 ```
 
 #### バッチ処理
 
 ```bash
 # 全フレーム処理
-python utils/gaze_mesh_viewer.py sample_tpose.obj data/
+uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/
 
 # フレーム範囲指定
-python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --frame-range 0 100
+uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/ --frame-range 0 100
 
 # 画像出力なし（メッシュファイルのみ）
-python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --no-images
+uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/ --no-images
 ```
 
 ## 詳細オプション
@@ -102,11 +102,11 @@ python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --no-images
 
 ```bash
 # 利用可能なカラーマップ
-python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --colormap viridis
-python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --colormap plasma
-python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --colormap hot      # デフォルト
-python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --colormap cool
-python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --colormap inferno
+uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/ --colormap viridis
+uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/ --colormap plasma
+uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/ --colormap hot      # デフォルト
+uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/ --colormap cool
+uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/ --colormap inferno
 ```
 
 #### カラーマップの特徴
@@ -123,22 +123,22 @@ python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --colormap inferno
 
 ```bash
 # グローバル正規化（デフォルト）- 全フレーム通しての最小・最大値で正規化
-python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --normalization global
+uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/ --normalization global
 
 # フレーム正規化 - 各フレーム内での最小・最大値で正規化
-python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --normalization frame
+uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/ --normalization frame
 
 # パーセンタイル正規化 - 5%〜95%パーセンタイルで正規化
-python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --normalization percentile
+uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/ --normalization percentile
 ```
 
 ### ファイル形式
 
 ```bash
 # 出力メッシュファイル形式
-python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --format obj  # デフォルト
-python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --format ply
-python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --format stl
+uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/ --format obj  # デフォルト
+uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/ --format ply
+uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/ --format stl
 ```
 
 ### 画像設定
@@ -148,13 +148,13 @@ python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --format stl
 uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/ --resolution 1920 1080
 
 # 視点角度設定
-python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --view-angle 30 60
+uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/ --view-angle 30 60
 
 # 画像出力スキップ
-python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --no-images
+uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/ --no-images
 
 # 凡例生成スキップ
-python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --no-legend
+uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/ --no-legend
 ```
 
 ## 出力ファイル
@@ -200,7 +200,7 @@ output/gaze_meshes/
 
 ```bash
 # フレーム76の詳細分析
-python utils/gaze_mesh_viewer.py sample_tpose.obj data/ \
+uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/ \
     --single-frame 76 \
     --colormap viridis \
     --normalization frame \
@@ -214,7 +214,7 @@ python utils/gaze_mesh_viewer.py sample_tpose.obj data/ \
 
 ```bash
 # 連続フレームの比較
-python utils/gaze_mesh_viewer.py sample_tpose.obj data/ \
+uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/ \
     --frame-range 70 80 \
     --colormap plasma \
     --normalization global \
@@ -227,7 +227,7 @@ python utils/gaze_mesh_viewer.py sample_tpose.obj data/ \
 
 ```bash
 # 高解像度画像の作成
-python utils/gaze_mesh_viewer.py sample_tpose.obj data/ \
+uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/ \
     --single-frame 76 \
     --colormap hot \
     --resolution 2560 1440 \
@@ -241,7 +241,7 @@ python utils/gaze_mesh_viewer.py sample_tpose.obj data/ \
 
 ```bash
 # 全フレームのメッシュ生成（画像なし）
-python utils/gaze_mesh_viewer.py sample_tpose.obj data/ \
+uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/ \
     --no-images \
     --format ply \
     --normalization global \
@@ -357,7 +357,7 @@ MemoryError: Unable to allocate array
 
 ```bash
 # 詳細ログの有効化
-python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --verbose
+uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/ --verbose
 
 # Python内でのデバッグ
 import logging
@@ -371,18 +371,18 @@ logging.basicConfig(level=logging.DEBUG)
 1. **画像生成のスキップ**:
 
    ```bash
-   python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --no-images
+   uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/ --no-images
    ```
 
 2. **フレーム範囲の制限**:
 
    ```bash
-   python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --frame-range 0 50
+   uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/ --frame-range 0 50
    ```
 
 3. **低解像度での確認**:
    ```bash
-   python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --resolution 400 300
+   uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/ --resolution 400 300
    ```
 
 ### メモリ使用量の削減
@@ -436,7 +436,7 @@ data = gaussian_filter1d(data, sigma=1.0)
 
 ```bash
 # 全フレームのメッシュ生成
-python utils/gaze_mesh_viewer.py sample_tpose.obj data/ --format obj
+uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/ --format obj
 
 # Blenderでアニメーション作成
 # 1. 生成されたOBJファイルを順次読み込み
@@ -467,11 +467,11 @@ combined_analysis = {
 
 ```bash
 # 被験者Aの視線可視化
-python utils/gaze_mesh_viewer.py sample_tpose.obj data/subject_A/ \
+uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/subject_A/ \
     --output results/subject_A/ --colormap viridis
 
 # 被験者Bの視線可視化
-python utils/gaze_mesh_viewer.py sample_tpose.obj data/subject_B/ \
+uv run utils/gaze_mesh_viewer.py sample_tpose.obj data/subject_B/ \
     --output results/subject_B/ --colormap viridis
 
 # 同一正規化で比較分析

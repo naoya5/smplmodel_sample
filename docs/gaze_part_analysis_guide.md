@@ -82,7 +82,7 @@ frame_N.npy # フレーム番号N
 
 ```bash
 # 指定フォルダの.npyファイルを分析
-python utils/gaze_part_viewer.py data/
+uv run utils/gaze_part_viewer.py data/
 
 # 詳細ログ付き実行
 uv run utils/gaze_part_viewer.py data/ --verbose
@@ -97,13 +97,13 @@ uv run utils/gaze_part_viewer.py data/ --output results/ --verbos
 
 ```bash
 # 視線値の閾値設定（0.1未満の値を除外）
-python utils/gaze_part_viewer.py data/ --threshold 0.1
+uv run utils/gaze_part_viewer.py data/ --threshold 0.1
 
 # 可視化グラフの生成をスキップ
-python utils/gaze_part_viewer.py data/ --no-visualization
+uv run utils/gaze_part_viewer.py data/ --no-visualization
 
 # カスタムセグメンテーションファイル使用
-python utils/gaze_part_viewer.py data/ --segmentation my_segmentation.json
+uv run utils/gaze_part_viewer.py data/ --segmentation my_segmentation.json
 ```
 
 ### プログラム内での使用
@@ -411,7 +411,7 @@ smplmodel_sample/
 
 ```bash
 # 詳細ログでの実行
-python utils/gaze_part_viewer.py data/ --verbose
+uv run utils/gaze_part_viewer.py data/ --verbose
 
 # Python内でのデバッグ
 import logging

@@ -3,7 +3,7 @@ gaze_mesh_viewer.py は T-pose メッシュに視線デー
 
 基本的な使い方
 
-uv run utils/gaze_mesh_viewer.py tpose.obj data/
+uv run utils/gaze_mesh_viewer.py tpose_mesh.obj data/
 
 必須引数
 
@@ -40,19 +40,19 @@ uv run utils/gaze_mesh_viewer.py tpose.obj data/
 
 # 基本実行
 
-python utils/gaze_mesh_viewer.py tpose.obj data/
+uv run utils/gaze_mesh_viewer.py tpose.obj data/
 
 # カラーマップとフレーム範囲指定
 
-python utils/gaze_mesh_viewer.py tpose.obj data/
+uv run utils/gaze_mesh_viewer.py tpose.obj data/
 --colormap viridis --frame-range 0 100
 
 # 単一フレーム処理
 
-python utils/gaze_mesh_viewer.py tpose.obj data/
+uv run utils/gaze_mesh_viewer.py tpose.obj data/
 --single-frame 50
 
 # メッシュのみ出力（画像なし）
 
-python utils/gaze_mesh_viewer.py tpose.obj data/
+uv run utils/gaze_mesh_viewer.py tpose.obj data/
 --no-images

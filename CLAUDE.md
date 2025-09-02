@@ -53,8 +53,8 @@ Follow these guidelines precisely.
 
 ```bash
 # スクリプトの実行例
-python src/pkl2obj.py
-python src/obj2obj.py
+uv run src/pkl2obj.py
+uv run src/obj2obj.py
 ```
 
 ## コード構造

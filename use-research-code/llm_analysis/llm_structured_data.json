@@ -1,0 +1,40 @@
+{
+  "basic_information": {
+    "total_duration_seconds": 0.03333333333333333,
+    "total_frames": 1,
+    "frame_rate": 30.0
+  },
+  "dominant_parts": [
+    {
+      "part_name": "head",
+      "duration_seconds": 0.0333,
+      "percentage": 99.9
+    }
+  ],
+  "behavioral_patterns": {},
+  "behavioral_features": {
+    "attention_stability": {
+      "assessment": "insufficient_data"
+    },
+    "exploration_tendency": {
+      "assessment": "insufficient_data"
+    },
+    "scanning_behavior": {
+      "assessment": "no_scanning_detected"
+    },
+    "focus_consistency": {
+      "consistency": "low",
+      "concentration_ratio": 0,
+      "dominant_part": null
+    }
+  },
+  "context_inference": {
+    "likely_activity": "face_focused_interaction",
+    "attention_strategy": "unknown",
+    "engagement_level": "brief_observation"
+  },
+  "data_quality": {
+    "sufficient_data": false,
+    "analysis_confidence": 0.1
+  }
+}

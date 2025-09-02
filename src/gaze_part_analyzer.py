@@ -516,6 +516,10 @@ class GazePartAnalyzer:
         
         output_dir.mkdir(exist_ok=True)
         
+        # フォント設定を改善
+        plt.rcParams['font.family'] = ['DejaVu Sans']
+        plt.rcParams['font.size'] = 10
+        
         # 部位別確率の上位15位をプロット
         sorted_parts = sorted(
             self.part_results.items(),
@@ -531,9 +535,9 @@ class GazePartAnalyzer:
         
         ax1.bar(range(len(parts)), probs, color='skyblue', alpha=0.7)
         ax1.set_xticks(range(len(parts)))
-        ax1.set_xticklabels(parts, rotation=45, ha='right')
-        ax1.set_ylabel('視線確率 (%)')
-        ax1.set_title('部位別視線分布 (上位15位)')
+        ax1.set_xticklabels(parts, rotation=45, ha='right', fontsize=9)
+        ax1.set_ylabel('Gaze Probability (%)', fontsize=11)
+        ax1.set_title('Body Part Gaze Distribution (Top 15)', fontsize=12, fontweight='bold')
         ax1.grid(True, alpha=0.3)
         
         # 2. フレーム別最大注視部位の推移（最初の50フレーム）
@@ -553,9 +557,9 @@ class GazePartAnalyzer:
             max_part_nums = [part_to_num.get(part, -1) if part is not None else -1 for part in max_parts]
         
         ax2.plot(frames, max_part_nums, 'o-', markersize=4, linewidth=1)
-        ax2.set_xlabel('フレーム番号')
-        ax2.set_ylabel('最大注視部位')
-        ax2.set_title('フレーム別最大注視部位の推移 (最初の50フレーム)')
+        ax2.set_xlabel('Frame Number', fontsize=11)
+        ax2.set_ylabel('Most Attended Body Part', fontsize=11)
+        ax2.set_title('Frame-by-Frame Maximum Attention Transition (First 50 Frames)', fontsize=12, fontweight='bold')
         ax2.set_yticks(range(len(unique_parts)))
         ax2.set_yticklabels(unique_parts, fontsize=8)
         ax2.grid(True, alpha=0.3)
@@ -567,6 +571,162 @@ class GazePartAnalyzer:
         plt.close()
         
         print(f"可視化グラフを保存: {graph_path}")
+        return graph_path
+    
+    def visualize_results_with_seconds(self, output_dir: Path = Path("output")) -> Path:
+        """
+        結果の可視化（秒数バージョン）
+        
+        Args:
+            output_dir: 出力ディレクトリ
+            
+        Returns:
+            グラフファイルパス
+        """
+        if not self.part_results:
+            raise ValueError("分析結果がありません")
+        
+        output_dir.mkdir(exist_ok=True)
+        
+        # フォント設定を改善
+        plt.rcParams['font.family'] = ['DejaVu Sans']
+        plt.rcParams['font.size'] = 10
+        
+        # 部位別確率の上位15位をプロット
+        sorted_parts = sorted(
+            self.part_results.items(),
+            key=lambda x: x[1]["probability"],
+            reverse=True
+        )[:15]
+        
+        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 10))
+        
+        # 1. 部位別確率の棒グラフ
+        parts = [item[0] for item in sorted_parts]
+        probs = [item[1]["probability"] * 100 for item in sorted_parts]
+        
+        ax1.bar(range(len(parts)), probs, color='skyblue', alpha=0.7)
+        ax1.set_xticks(range(len(parts)))
+        ax1.set_xticklabels(parts, rotation=45, ha='right', fontsize=9)
+        ax1.set_ylabel('Gaze Probability (%)', fontsize=11)
+        ax1.set_title('Body Part Gaze Distribution (Top 15)', fontsize=12, fontweight='bold')
+        ax1.grid(True, alpha=0.3)
+        
+        # 2. 時間別最大注視部位の推移（最初の50フレーム）
+        frame_subset = self.frame_results[:50]
+        timestamps = [self.get_timestamp_from_frame(f["frame"]) for f in frame_subset]
+        max_parts = [f["max_part"] for f in frame_subset]
+        
+        # Noneを除外して部位を数値にマッピング
+        valid_max_parts = [part for part in max_parts if part is not None]
+        if not valid_max_parts:
+            print("警告: 有効な最大注視部位データがありません")
+            unique_parts = ["unknown"]
+            max_part_nums = [0] * len(max_parts)
+        else:
+            unique_parts = sorted(set(valid_max_parts))
+            part_to_num = {part: i for i, part in enumerate(unique_parts)}
+            max_part_nums = [part_to_num.get(part, -1) if part is not None else -1 for part in max_parts]
+        
+        ax2.plot(timestamps, max_part_nums, 'o-', markersize=4, linewidth=1, color='#2E86AB')
+        ax2.set_xlabel('Time (seconds)', fontsize=11)
+        ax2.set_ylabel('Most Attended Body Part', fontsize=11)
+        ax2.set_title('Time-based Maximum Attention Transition (First 50 Frames)', fontsize=12, fontweight='bold')
+        ax2.set_yticks(range(len(unique_parts)))
+        ax2.set_yticklabels(unique_parts, fontsize=8)
+        ax2.grid(True, alpha=0.3)
+        
+        # X軸の時間表示を改善
+        ax2.tick_params(axis='x', labelsize=9)
+        
+        plt.tight_layout()
+        
+        graph_path = output_dir / "gaze_part_analysis_seconds.png"
+        plt.savefig(graph_path, dpi=300, bbox_inches='tight')
+        plt.close()
+        
+        print(f"秒数版可視化グラフを保存: {graph_path}")
+        return graph_path
+    
+    def visualize_full_timeline(self, output_dir: Path = Path("output")) -> Path:
+        """
+        全フレームの時系列可視化
+        
+        Args:
+            output_dir: 出力ディレクトリ
+            
+        Returns:
+            グラフファイルパス
+        """
+        if not self.part_results:
+            raise ValueError("分析結果がありません")
+        
+        output_dir.mkdir(exist_ok=True)
+        
+        # フォント設定を改善
+        plt.rcParams['font.family'] = ['DejaVu Sans']
+        plt.rcParams['font.size'] = 10
+        
+        # 部位別確率の上位15位をプロット
+        sorted_parts = sorted(
+            self.part_results.items(),
+            key=lambda x: x[1]["probability"],
+            reverse=True
+        )[:15]
+        
+        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(15, 10))
+        
+        # 1. 部位別確率の棒グラフ
+        parts = [item[0] for item in sorted_parts]
+        probs = [item[1]["probability"] * 100 for item in sorted_parts]
+        
+        ax1.bar(range(len(parts)), probs, color='skyblue', alpha=0.7)
+        ax1.set_xticks(range(len(parts)))
+        ax1.set_xticklabels(parts, rotation=45, ha='right', fontsize=9)
+        ax1.set_ylabel('Gaze Probability (%)', fontsize=11)
+        ax1.set_title('Body Part Gaze Distribution (Top 15)', fontsize=12, fontweight='bold')
+        ax1.grid(True, alpha=0.3)
+        
+        # 2. 全フレームの時間別最大注視部位の推移
+        timestamps = [self.get_timestamp_from_frame(f["frame"]) for f in self.frame_results]
+        max_parts = [f["max_part"] for f in self.frame_results]
+        
+        # Noneを除外して部位を数値にマッピング
+        valid_max_parts = [part for part in max_parts if part is not None]
+        if not valid_max_parts:
+            print("警告: 有効な最大注視部位データがありません")
+            unique_parts = ["unknown"]
+            max_part_nums = [0] * len(max_parts)
+        else:
+            unique_parts = sorted(set(valid_max_parts))
+            part_to_num = {part: i for i, part in enumerate(unique_parts)}
+            max_part_nums = [part_to_num.get(part, -1) if part is not None else -1 for part in max_parts]
+        
+        # 線グラフではなく散布図として表示（全フレームなので）
+        ax2.scatter(timestamps, max_part_nums, s=8, alpha=0.7, color='#2E86AB')
+        ax2.set_xlabel('Time (seconds)', fontsize=11)
+        ax2.set_ylabel('Most Attended Body Part', fontsize=11)
+        ax2.set_title(f'Time-based Maximum Attention Transition (All {len(self.frame_results)} Frames)', fontsize=12, fontweight='bold')
+        ax2.set_yticks(range(len(unique_parts)))
+        ax2.set_yticklabels(unique_parts, fontsize=8)
+        ax2.grid(True, alpha=0.3)
+        
+        # X軸の時間表示を改善
+        ax2.tick_params(axis='x', labelsize=9)
+        
+        # 総時間を表示
+        total_time = max(timestamps)
+        ax2.text(0.02, 0.98, f'Total duration: {total_time:.1f}s', 
+                transform=ax2.transAxes, fontsize=10, 
+                verticalalignment='top', bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
+        
+        plt.tight_layout()
+        
+        graph_path = output_dir / "gaze_part_analysis_full_timeline.png"
+        plt.savefig(graph_path, dpi=300, bbox_inches='tight')
+        plt.close()
+        
+        print(f"全フレーム時系列グラフを保存: {graph_path}")
         return graph_path
     
     def run_analysis(self, data_folder: Path, output_dir: Path = Path("output")) -> None:
