@@ -1,16 +1,23 @@
 #!/usr/bin/env python3
 """
-視線データフレーム別分析スクリプト
+視線データ フレーム別分析（部位の頂点数で正規化版）
 
 指定フォルダ内の.npyファイル（視線データ）を読み込み、SMPLモデルの各部位への
-視線集中度をフレーム別に計算・分析して、frame_gaze_analysis.csvを生成します。
+視線集中度を「各部位の頂点数で平均化（正規化）」してフレーム別に計算・分析し、
+元スクリプトと同一スキーマのCSVを出力します。
+
+正規化の内容:
+- 各フレーム、各部位に対して「その部位に属する頂点の視線値の合計 / 頂点数」を計算
+- 以降の最大部位判定と比率計算は、この正規化値を用いて実施
 
 使用例:
-    uv run generate_frame_gaze_analysis.py --data_folder data/User11 --output results/User11/frame_gaze_analysis.csv
+    uv run generate_frame_gaze_analysis_normalized.py \
+        --data_folder data/User11 \
+        --output results/User11/frame_gaze_analysis_normalized.csv
 
 引数:
     --data_folder: 視線データ(.npyファイル)が格納されたフォルダパス
-    --output: 出力CSVファイルパス（デフォルト: frame_gaze_analysis.csv）
+    --output: 出力CSVファイルパス（デフォルト: frame_gaze_analysis_normalized.csv）
     --frame_rate: フレームレート（Hz、デフォルト: 30.0）
 """
 
@@ -26,8 +33,8 @@ import pandas as pd
 import requests
 
 
-class FrameGazeAnalyzer:
-    """視線データのフレーム別分析を行うクラス"""
+class FrameGazeAnalyzerNormalized:
+    """視線データのフレーム別分析（部位の頂点数で正規化）を行うクラス"""
 
     def __init__(
         self,
@@ -129,10 +136,10 @@ class FrameGazeAnalyzer:
 
     def map_gaze_to_parts(self) -> Dict[str, Dict[str, Any]]:
         """
-        視線データを部位別に集計
+        視線データを部位別に集計（部位の頂点数で正規化: 平均化）
 
         Returns:
-            部位別の視線データ
+            部位別の視線データ（正規化値）
         """
         if self.segmentation_data is None:
             self.segmentation_data = self.download_segmentation_file()
@@ -140,19 +147,20 @@ class FrameGazeAnalyzer:
         if not self.gaze_data:
             raise ValueError("視線データが読み込まれていません")
 
-        print("部位別視線データの集計を開始")
+        print("部位別視線データの集計（正規化）を開始")
 
         # 部位別結果の初期化
         part_results = {}
         for part_name in self.segmentation_data.keys():
+            vertex_indices = self.segmentation_data[part_name]
             part_results[part_name] = {
-                "total_gaze": 0.0,
-                "frame_values": {},
-                "vertex_indices": self.segmentation_data[part_name],
-                "vertex_count": len(self.segmentation_data[part_name]),
+                "total_gaze": 0.0,  # 正規化値の合計（各フレーム平均の合計）
+                "frame_values": {},  # フレームごとの正規化値
+                "vertex_indices": vertex_indices,
+                "vertex_count": len(vertex_indices),
             }
 
-        # フレームごとに部位別集計
+        # フレームごとに部位別集計（正規化）
         for frame_num, gaze_values in self.gaze_data.items():
             for part_name, part_info in part_results.items():
                 vertex_indices = part_info["vertex_indices"]
@@ -162,20 +170,24 @@ class FrameGazeAnalyzer:
                     idx for idx in vertex_indices if 0 <= idx < len(gaze_values)
                 ]
 
-                if valid_indices:
-                    part_gaze_sum = np.sum(gaze_values[valid_indices])
-                    part_results[part_name]["frame_values"][frame_num] = part_gaze_sum
-                    part_results[part_name]["total_gaze"] += part_gaze_sum
+                vertex_count = len(valid_indices)
+                if vertex_count > 0:
+                    part_gaze_sum = float(np.sum(gaze_values[valid_indices]))
+                    normalized_value = part_gaze_sum / float(vertex_count)
+                    part_results[part_name]["frame_values"][frame_num] = (
+                        normalized_value
+                    )
+                    part_results[part_name]["total_gaze"] += normalized_value
                 else:
                     part_results[part_name]["frame_values"][frame_num] = 0.0
 
-        print(f"{len(part_results)}部位の集計が完了")
+        print(f"{len(part_results)}部位の集計（正規化）が完了")
         self.part_results = part_results
         return part_results
 
     def analyze_frame_attention(self) -> List[Dict[str, Any]]:
         """
-        フレームごとの最大注視部位分析
+        フレームごとの最大注視部位分析（正規化値ベース）
 
         Returns:
             フレーム別分析結果
@@ -183,20 +195,20 @@ class FrameGazeAnalyzer:
         if not self.part_results:
             raise ValueError("部位別データが計算されていません")
 
-        print("フレーム別注視分析を開始")
+        print("フレーム別注視分析（正規化値）を開始")
 
         frame_results = []
 
         for frame_num in sorted(self.gaze_data.keys()):
             frame_data = {
                 "frame": frame_num,
-                "part_values": {},
+                "part_values": {},  # 正規化値
                 "max_part": None,
-                "max_value": 0.0,
-                "total_gaze": 0.0,
+                "max_value": 0.0,  # 正規化最大値
+                "total_gaze": 0.0,  # 正規化値の合計
             }
 
-            # 各部位の視線値を取得
+            # 各部位の正規化値を取得
             for part_name, part_info in self.part_results.items():
                 gaze_value = part_info["frame_values"].get(frame_num, 0.0)
                 frame_data["part_values"][part_name] = gaze_value
@@ -207,7 +219,7 @@ class FrameGazeAnalyzer:
                     frame_data["max_value"] = gaze_value
                     frame_data["max_part"] = part_name
 
-            # 各部位の割合を計算
+            # 各部位の割合を計算（正規化値に基づく）
             if frame_data["total_gaze"] > 0:
                 frame_data["part_ratios"] = {
                     part: value / frame_data["total_gaze"]
@@ -220,13 +232,13 @@ class FrameGazeAnalyzer:
 
             frame_results.append(frame_data)
 
-        print(f"{len(frame_results)}フレームの分析が完了")
+        print(f"{len(frame_results)}フレームの分析（正規化値）が完了")
         self.frame_results = frame_results
         return frame_results
 
     def export_frame_analysis_csv(self, output_path: Path) -> None:
         """
-        フレーム別分析結果をCSVファイルに出力
+        フレーム別分析結果をCSVファイルに出力（元スキーマを踏襲）
 
         Args:
             output_path: 出力CSVファイルパス
@@ -246,7 +258,7 @@ class FrameGazeAnalyzer:
                 "total_gaze": frame_result["total_gaze"],
             }
 
-            # 各部位の値と割合を追加
+            # 各部位の値と割合を追加（列名は元スクリプトと同一）
             for part_name in sorted(self.part_results.keys()):
                 row[f"{part_name}_value"] = frame_result["part_values"].get(
                     part_name, 0.0
@@ -261,19 +273,19 @@ class FrameGazeAnalyzer:
         df = pd.DataFrame(frame_data)
         df.to_csv(output_path, index=False)
 
-        print(f"フレーム別分析結果をCSVに出力: {output_path}")
+        print(f"フレーム別分析結果（正規化）をCSVに出力: {output_path}")
         print(f"総フレーム数: {len(frame_data)}")
         print(f"分析した部位数: {len(self.part_results)}")
 
     def run_analysis(self, data_folder: Path, output_path: Path) -> None:
         """
-        フレーム別視線分析を実行してCSVファイルを生成
+        フレーム別視線分析を実行してCSVファイルを生成（正規化版）
 
         Args:
             data_folder: 視線データフォルダ
             output_path: 出力CSVファイルパス
         """
-        print("フレーム別視線分析を開始")
+        print("フレーム別視線分析（正規化）を開始")
         print(f"データフォルダ: {data_folder}")
         print(f"出力ファイル: {output_path}")
         print("-" * 60)
@@ -282,16 +294,16 @@ class FrameGazeAnalyzer:
             # 1. データ読み込み
             self.load_gaze_data(data_folder)
 
-            # 2. 部位別集計
+            # 2. 部位別集計（正規化）
             self.map_gaze_to_parts()
 
-            # 3. フレーム別分析
+            # 3. フレーム別分析（正規化値）
             self.analyze_frame_attention()
 
-            # 4. CSV出力
+            # 4. CSV出力（元スキーマ）
             self.export_frame_analysis_csv(output_path)
 
-            print("\nframe_gaze_analysis.csvの生成が正常に完了しました!")
+            print("\n正規化版 frame_gaze_analysis の生成が正常に完了しました!")
 
         except Exception as e:
             print(f"エラーが発生しました: {e}")
@@ -301,12 +313,15 @@ class FrameGazeAnalyzer:
 def main():
     """メイン関数"""
     parser = argparse.ArgumentParser(
-        description="視線データフレーム別分析スクリプト",
+        description="視線データフレーム別分析スクリプト（部位頂点数で正規化）",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 使用例:
-    uv run generate_frame_gaze_analysis.py --data_folder data/User11 --output results/User11/frame_gaze_analysis.csv
-    uv run generate_frame_gaze_analysis.py --data_folder data/User11 --output frame_gaze_analysis.csv --frame_rate 60.0
+    uv run generate_frame_gaze_analysis_normalized.py \
+        --data_folder data/User11 \
+        --output results/User11/frame_gaze_analysis_normalized.csv
+    uv run generate_frame_gaze_analysis_normalized.py \
+        --data_folder data/User11 --output frame_gaze_analysis_normalized.csv --frame_rate 60.0
         """,
     )
 
@@ -320,8 +335,8 @@ def main():
     parser.add_argument(
         "--output",
         type=str,
-        default="frame_gaze_analysis.csv",
-        help="出力CSVファイルパス（デフォルト: frame_gaze_analysis.csv）",
+        default="frame_gaze_analysis_normalized.csv",
+        help="出力CSVファイルパス（デフォルト: frame_gaze_analysis_normalized.csv）",
     )
 
     parser.add_argument(
@@ -347,7 +362,7 @@ def main():
         return
 
     # 分析器の作成と実行
-    analyzer = FrameGazeAnalyzer(frame_rate=args.frame_rate)
+    analyzer = FrameGazeAnalyzerNormalized(frame_rate=args.frame_rate)
     analyzer.run_analysis(data_folder, output_path)
 
 

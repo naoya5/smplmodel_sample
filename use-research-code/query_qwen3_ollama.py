@@ -33,6 +33,8 @@ from typing import Any, Dict, List, Optional
 DEFAULT_MODEL = "qwen3:8b"
 DEFAULT_TEMPERATURE = 0.2
 DEFAULT_HOST = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
+# デフォルトの接続タイムアウト（秒）。初回ロードで時間がかかるため長めに設定。
+DEFAULT_TIMEOUT = float(os.environ.get("OLLAMA_TIMEOUT", "600"))
 
 
 TRANSITIONS_CSV_TEXT = """transition_id,frame,time_seconds,from_part,to_part
@@ -212,6 +214,7 @@ TRANSITIONS_CSV_TEXT = """transition_id,frame,time_seconds,from_part,to_part
 def build_messages(csv_text: str) -> List[Dict[str, str]]:
     system_prompt = (
         "あなたは視線行動研究の専門家です。日本語で簡潔・論理的に回答してください。"  # noqa: E501
+        "'視線データは面接官が面接中の面接者を見ている時の注視変化のデータです。'"
         "出力は次の構成に厳密に従ってください: \n"
         "- 概要\n"
         "- 詳細分析\n"
@@ -243,7 +246,12 @@ def build_messages(csv_text: str) -> List[Dict[str, str]]:
 
 
 def chat_ollama(
-    host: str, model: str, messages: List[Dict[str, str]], *, temperature: float
+    host: str,
+    model: str,
+    messages: List[Dict[str, str]],
+    *,
+    temperature: float,
+    timeout: float,
 ) -> str:
     url = f"{host.rstrip('/')}/api/chat"
     payload: Dict[str, Any] = {
@@ -260,12 +268,19 @@ def chat_ollama(
         url, data=data, headers={"Content-Type": "application/json"}, method="POST"
     )
     try:
-        with urllib.request.urlopen(req, timeout=120) as resp:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
             resp_body = resp.read()
     except urllib.error.HTTPError as e:
         body = e.read().decode("utf-8", errors="ignore")
         raise SystemExit(f"HTTPError {e.code}: {body}")
     except urllib.error.URLError as e:
+        # TimeoutError は URLError の理由として来る場合がある
+        if isinstance(e.reason, TimeoutError):
+            raise SystemExit(
+                "TimeoutError: Ollama サーバからの応答がタイムアウトしました。"
+                " サーバの起動状態やモデルの初回ロード時間を確認し、"
+                " --timeout または 環境変数 OLLAMA_TIMEOUT で余裕を持った秒数を設定してください。"
+            )
         raise SystemExit(f"URLError: {e}")
 
     try:
@@ -306,6 +321,12 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
         default=DEFAULT_TEMPERATURE,
         help="Sampling temperature (default: 0.2)",
     )
+    parser.add_argument(
+        "--timeout",
+        type=float,
+        default=DEFAULT_TIMEOUT,
+        help="HTTP timeout seconds (default: env OLLAMA_TIMEOUT or 600)",
+    )
     return parser.parse_args(argv)
 
 
@@ -321,7 +342,11 @@ def main(argv: List[str]) -> int:
     csv_text = load_csv_text(args.file)
     messages = build_messages(csv_text)
     response = chat_ollama(
-        args.host, args.model, messages, temperature=args.temperature
+        args.host,
+        args.model,
+        messages,
+        temperature=args.temperature,
+        timeout=args.timeout,
     )
     print(response)
     return 0
